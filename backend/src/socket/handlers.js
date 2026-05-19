@@ -3,6 +3,7 @@ import { claimTile, getClaimed, getLeaderboardData, getClaimedCount, resetGrid }
 
 const cooldowns = new Map();
 const onlineUsers = new Map();
+let leaderboardTimer = null;
 
 export function regSocketHandlers(io) {
     io.on("connection", (socket) => {
@@ -63,7 +64,10 @@ export function regSocketHandlers(io) {
                 ownerColor: tile.ownerColor,
                 claimedAt: tile.claimedAt,
             });
-            io.emit("leaderboard", getLeaderboardData());
+            clearTimeout(leaderboardTimer);
+            leaderboardTimer = setTimeout(() => {
+                io.emit("leaderboard", getLeaderboardData());
+            }, 2000);
 
             const claimedCount = getClaimedCount();
             if (claimedCount >= GRID_SIZE * GRID_SIZE) {
